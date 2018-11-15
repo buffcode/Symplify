@@ -42,6 +42,21 @@ final class PackageComposerJsonMergerTest extends AbstractConfigAwareContainerTe
         ], $merged);
     }
 
+    public function testUniqueRepositories(): void
+    {
+        $merged = $this->packageComposerJsonMerger->mergeFileInfos(
+            $this->getFileInfos('SourceUniqueRepositories'),
+            ['repositories']
+        );
+
+        $this->assertSame([
+            'repositories' => [[
+                'type' => 'composer',
+                'url' => 'https://packages.example.org/',
+            ]],
+        ], $merged);
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/Source/config.yml';
@@ -50,10 +65,10 @@ final class PackageComposerJsonMergerTest extends AbstractConfigAwareContainerTe
     /**
      * @return SplFileInfo[]
      */
-    private function getFileInfos(): array
+    private function getFileInfos(string $path = 'Source'): array
     {
         $iterator = Finder::create()->files()
-            ->in(__DIR__ . '/Source')
+            ->in(__DIR__ . DIRECTORY_SEPARATOR . $path)
             ->name('*.json')
             ->getIterator();
 
